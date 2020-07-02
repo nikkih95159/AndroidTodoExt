@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Todoext</string>
+    <string name="edit_message">Enter a todo</string>
+    <string name="button_send">Add</string>
+</resources>

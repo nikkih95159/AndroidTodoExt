@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "292904054370",
+    "firebase_url": "https://extension-f6f50.firebaseio.com",
+    "project_id": "extension-f6f50",
+    "storage_bucket": "extension-f6f50.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:292904054370:android:0cab96917fb3c63b0d2b3b",
+        "android_client_info": {
+          "package_name": "com.example.todoext"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "292904054370-ins8ofq9mqdnoginpid97b8b17kbbklj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5TJHEpLdc-l2ISD7FLlVaNp346wj5gWg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "292904054370-ins8ofq9mqdnoginpid97b8b17kbbklj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
