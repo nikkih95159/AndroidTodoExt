@@ -1,7 +1,6 @@
-package com.example.todoext;
+package com.nik.todoext;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

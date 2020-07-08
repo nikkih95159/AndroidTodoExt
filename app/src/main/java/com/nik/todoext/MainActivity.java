@@ -1,18 +1,19 @@
-package com.example.todoext;
+package com.nik.todoext;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,7 +21,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
     List<TodoItem> todoItemList;
     TodoItemAdapter adapter;
     ListView listViewItems;
+    String username;
+    String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +51,14 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
         todoItemList = new ArrayList<TodoItem>();
         adapter = new TodoItemAdapter(this, todoItemList);
         listViewItems.setAdapter(adapter);
-        FirebaseDatabase.getInstance().getReference("users/001/todo").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+
+        username = getIntent().getStringExtra("USERNAME");
+        password = getIntent().getStringExtra("PASSWORD");
+
+//        Log.d("USERNAME MAIN", username);
+        mDatabase.child("users").child(username).child("password").setValue(password);
+
+        FirebaseDatabase.getInstance().getReference("users/" + username + "/todo").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 addDataToList(snapshot);
@@ -57,7 +66,63 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.w("MainActivity", "loadItem:onCancelled", error.toException());
+//                Log.w("MainActivity", "loadItem:onCancelled", error.toException());
+            }
+        });
+
+        FirebaseDatabase.getInstance().getReference("users/" + username + "/todo").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//                Log.d("CHILD ADDED", snapshot.child("itemText").getValue().toString());
+                TodoItem todoItem = new TodoItem();
+                todoItem.itemText = snapshot.child("itemText").getValue().toString();
+                todoItem.done = Boolean.valueOf(snapshot.child("done").getValue().toString());
+                todoItem.objectId = snapshot.child("objectId").getValue().toString();
+                if (!todoItemList.contains(todoItem)) {
+                    todoItemList.add(todoItem);
+                    Toast.makeText(getApplicationContext(), "New todo added '" + todoItem.itemText + "'", Toast.LENGTH_SHORT).show();
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+//                Log.d("CHILD CHANGED", snapshot.getValue().toString());
+                TodoItem todoItem = new TodoItem();
+                todoItem.itemText = snapshot.child("itemText").getValue().toString();
+                todoItem.done = !Boolean.valueOf(snapshot.child("done").getValue().toString());
+                todoItem.objectId = snapshot.child("objectId").getValue().toString();
+                int index = todoItemList.indexOf(todoItem);
+                if (index != -1) {
+                    todoItemList.get(index).done = !todoItem.done;
+                    Toast.makeText(getApplicationContext(), "Modified todo '" + todoItem.itemText + "'", Toast.LENGTH_SHORT).show();
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+//                Log.d("CHILD REMOVED", snapshot.getValue().toString());
+                TodoItem todoItem = new TodoItem();
+                todoItem.itemText = snapshot.child("itemText").getValue().toString();
+                todoItem.done = Boolean.valueOf(snapshot.child("done").getValue().toString());
+                todoItem.objectId = snapshot.child("objectId").getValue().toString();
+                int index = todoItemList.indexOf(todoItem);
+                if (index != -1) {
+                    todoItemList.remove(index);
+                    Toast.makeText(getApplicationContext(), "Todo removed '" + todoItem.itemText + "'", Toast.LENGTH_SHORT).show();
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }
@@ -102,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
                 todoItem.itemText = itemEditText.getText().toString();
                 todoItem.done = false;
 //                String key = mDatabase.child("users/001/todo").push().getKey();
-                DatabaseReference key = mDatabase.child("users/001/todo").push();
+                DatabaseReference key = mDatabase.child("users/" + username + "/todo").push();
                 todoItem.objectId = key.getKey();
                 key.setValue(todoItem);
 //                Map<String, Object> childUpdates = new HashMap<>();
@@ -120,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
 
     @Override
     public void modifyItemState(String itemObjectId, String itemText, boolean isDone) {
-        DatabaseReference itemReference = mDatabase.child("users/001/todo").child(itemObjectId);
+        DatabaseReference itemReference = mDatabase.child("users/" + username + "/todo").child(itemObjectId);
         itemReference.child("done").setValue(isDone);
         TodoItem temp = new TodoItem();
         temp.itemText = itemText;
@@ -137,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
 
     @Override
     public void onItemDelete(String itemObjectId, String itemText, boolean isDone) {
-        DatabaseReference itemReference = mDatabase.child("users/001/todo").child(itemObjectId);
+        DatabaseReference itemReference = mDatabase.child("users/" + username + "/todo").child(itemObjectId);
         itemReference.removeValue();
         TodoItem temp = new TodoItem();
         temp.itemText = itemText;
@@ -149,13 +214,11 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
         adapter.notifyDataSetChanged();
     }
 
-    /** called when user taps adds a todo */
-    public void addTodo(View view) {
-        // do something in response to the button
-//        Intent intent = new Intent(this, DisplayMessageActivity.class);
-//        EditText editText = (EditText) findViewById(R.id.entertodotext);
+//    /** called when user taps adds a todo */
+//    public void addTodo(View view) {
+//        // do something in response to the button
+//        EditText editText = (EditText) findViewById(R.id.editTextTextPersonName);
 //        String message = editText.getText().toString();
-//        intent.putExtra(EXTRA_MESSAGE, message);
-//        startActivity(intent);
-    }
+//        Log.d("USERNAME", message);
+//    }
 }

@@ -1,4 +1,4 @@
-package com.example.todoext;
+package com.nik.todoext;
 
 public interface ItemRowListener {
     void modifyItemState(String itemObjectId, String itemText, boolean isDone);
