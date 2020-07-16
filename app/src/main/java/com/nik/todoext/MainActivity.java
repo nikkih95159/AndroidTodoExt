@@ -56,19 +56,18 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
         password = getIntent().getStringExtra("PASSWORD");
 
 //        Log.d("USERNAME MAIN", username);
-        mDatabase.child("users").child(username).child("password").setValue(password);
 
-        FirebaseDatabase.getInstance().getReference("users/" + username + "/todo").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                addDataToList(snapshot);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.w("MainActivity", "loadItem:onCancelled", error.toException());
-            }
-        });
+//        FirebaseDatabase.getInstance().getReference("users/" + username + "/todo").orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                addDataToList(snapshot);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+////                Log.w("MainActivity", "loadItem:onCancelled", error.toException());
+//            }
+//        });
 
         FirebaseDatabase.getInstance().getReference("users/" + username + "/todo").addChildEventListener(new ChildEventListener() {
             @Override
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
                 todoItem.objectId = snapshot.child("objectId").getValue().toString();
                 if (!todoItemList.contains(todoItem)) {
                     todoItemList.add(todoItem);
-                    Toast.makeText(getApplicationContext(), "New todo added '" + todoItem.itemText + "'", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), "New todo added '" + todoItem.itemText + "'", Toast.LENGTH_SHORT).show();
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -95,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
                 int index = todoItemList.indexOf(todoItem);
                 if (index != -1) {
                     todoItemList.get(index).done = !todoItem.done;
-                    Toast.makeText(getApplicationContext(), "Modified todo '" + todoItem.itemText + "'", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), "Modified todo '" + todoItem.itemText + "'", Toast.LENGTH_SHORT).show();
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -110,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
                 int index = todoItemList.indexOf(todoItem);
                 if (index != -1) {
                     todoItemList.remove(index);
-                    Toast.makeText(getApplicationContext(), "Todo removed '" + todoItem.itemText + "'", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), "Todo removed '" + todoItem.itemText + "'", Toast.LENGTH_SHORT).show();
                     adapter.notifyDataSetChanged();
                 }
             }

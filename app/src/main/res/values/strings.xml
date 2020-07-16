@@ -2,7 +2,9 @@
     <string name="app_name">Todoext</string>
     <string name="edit_message">Enter a todo</string>
     <string name="button_send">Add</string>
-    <string name="login_button">Login/Signup</string>
+    <string name="login_button">Login</string>
+    <string name="signup_button">Signup</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
+    <string name="passwordVerify">Verify password</string>
 </resources>
