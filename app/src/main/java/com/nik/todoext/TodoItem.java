@@ -1,6 +1,8 @@
 package com.nik.todoext;
 
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.RequiresApi;
 
@@ -10,6 +12,7 @@ public class TodoItem {
     public String objectId = "";
     public String itemText = "";
     public boolean done = false;
+    public long date = 0;
     public TodoItem() {
 
     }
@@ -19,7 +22,8 @@ public class TodoItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TodoItem todoItem = (TodoItem) o;
-        return done == todoItem.done &&
+//        return done == todoItem.done &&
+        return
                 objectId.equals(todoItem.objectId) &&
                 itemText.equals(todoItem.itemText);
     }
