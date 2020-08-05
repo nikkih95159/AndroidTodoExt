@@ -94,6 +94,9 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
 //                    Toast.makeText(getApplicationContext(), "New todo added '" + todoItem.itemText + "'", Toast.LENGTH_SHORT).show();
                     adapter.notifyDataSetChanged();
                 }
+                for (int i = 0; i < todoItemList.size(); i++) {
+                    Log.d("LIst: ", todoItemList.get(i).itemText + ", " + todoItemList.get(i).done);
+                }
             }
 
             @Override
@@ -147,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
                 Calendar c1 = Calendar.getInstance();
                 long date = c1.getTimeInMillis();
                 for (DataSnapshot sp: snapshot.getChildren()) {
-                    if ((long)sp.child("date").getValue() + MS24HOURS < date && (boolean)sp.child("done").getValue() == true) {
+                    if ((long)sp.child("date").getValue() + 10 < date && (boolean)sp.child("done").getValue() == true) {
                         TodoItem item = new TodoItem();
                         item.done = (boolean) sp.child("done").getValue();
                         item.itemText = sp.child("itemText").getValue().toString();
@@ -237,7 +240,6 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
         TodoItem temp = new TodoItem();
         temp.itemText = itemText;
         temp.objectId = itemObjectId;
-        Log.d("MODIFY ITEM STATE", itemText);
         if (isDone == true) {
             Toast.makeText(getApplicationContext(), "Completed todo '" + itemText + "'", Toast.LENGTH_SHORT).show();
             itemReference.child("date").setValue(date);
@@ -260,6 +262,7 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
                 index = todoItemList.indexOf(temp);
                 if (index != -1) {
                     todoItemList.get(index).done = isDone;
+                    adapter.notifyDataSetChanged();
                 }
             }
         }
@@ -280,8 +283,10 @@ public class MainActivity extends AppCompatActivity implements ItemRowListener {
         }
         else {
             index = doneTodoList.indexOf(temp);
-            doneTodoList.remove(index);
-            doneAdapter.notifyDataSetChanged();
+            if (index != -1) {
+                doneTodoList.remove(index);
+                doneAdapter.notifyDataSetChanged();
+            }
         }
         Toast.makeText(getApplicationContext(), "Deleted todo '" + itemText + "'", Toast.LENGTH_SHORT).show();
     }

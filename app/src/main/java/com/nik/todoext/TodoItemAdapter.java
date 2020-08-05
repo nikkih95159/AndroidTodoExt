@@ -1,6 +1,7 @@
 package com.nik.todoext;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,7 @@ public class TodoItemAdapter extends BaseAdapter {
         final String itemText = itemList.get(i).itemText;
         final boolean done = itemList.get(i).done;
         View view;
-        ListRowHolder vh;
+        final ListRowHolder vh;
 
         if (convertView == null) {
             view = mInflater.inflate(R.layout.row_items, parent, false);
@@ -44,7 +45,7 @@ public class TodoItemAdapter extends BaseAdapter {
         vh.isDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                rowListener.modifyItemState(objectId, itemText, !done);
+                rowListener.modifyItemState(objectId, itemText, vh.isDone.isChecked());
             }
         });
 
